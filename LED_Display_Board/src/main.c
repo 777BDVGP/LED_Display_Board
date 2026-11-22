@@ -290,6 +290,10 @@ void app_main(void)
     esp_timer_delete(s_wifiConnectTimer);
     ESP_LOGI(TAG, "WiFi Connected.");
 
+    // A pending INSTALL FROM GITHUB runs here, before the tasks below take
+    // their memory (restarts into the new firmware on success).
+    FwUpdate_RunPendingInstall();
+
     // 4. Setup OTA
     SetupOTA();
 

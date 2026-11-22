@@ -11,20 +11,23 @@
 
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
+#include "freertos/semphr.h"
 
 #include "cJSON.h"
 #include "esp_crt_bundle.h"
+#include "esp_heap_caps.h"
 #include "esp_http_client.h"
 #include "esp_https_ota.h"
 #include "esp_log.h"
 #include "esp_ota_ops.h"
 #include "esp_system.h"
 
+#include "files.h"
 #include "fw_update.h"
 
 static const char *TAG = "fw_update";
 
-static char          s_status[160] = "";
+static char          s_status[220] = "";
 static char          s_latest[16]  = "";
 static char          s_binPath[64] = "";
 static volatile bool s_busy        = false;
@@ -66,7 +69,10 @@ static void doCheck(void)
 
     char body[512];
     int len = -1, status = 0;
-    if (esp_http_client_open(c, 0) == ESP_OK) {
+    unsigned heapBefore = (unsigned)heap_caps_get_free_size(MALLOC_CAP_8BIT);
+    unsigned blockBefore = (unsigned)heap_caps_get_largest_free_block(MALLOC_CAP_8BIT);
+    esp_err_t err = esp_http_client_open(c, 0);
+    if (err == ESP_OK) {
         esp_http_client_fetch_headers(c);
         status = esp_http_client_get_status_code(c);
         len = esp_http_client_read_response(c, body, sizeof(body) - 1);
@@ -75,8 +81,9 @@ static void doCheck(void)
     esp_http_client_cleanup(c);
 
     if (len <= 0 || status != 200) {
-        char m[96];
-        snprintf(m, sizeof(m), "Check failed (no answer from GitHub, HTTP %d) - is the clock online?", status);
+        char m[160];
+        snprintf(m, sizeof(m), "Check failed (%s, HTTP %d; free memory %u, largest block %u)",
+                 esp_err_to_name(err), status, heapBefore, blockBefore);
         setStatus(m);
         return;
     }
@@ -110,34 +117,138 @@ static void doCheck(void)
 // =============================================================================
 // INSTALL FROM GITHUB
 // =============================================================================
+// The download needs a TLS session (~16 KB receive buffer in one piece). In a
+// running clock the heap is too fragmented for that to work reliably, so the
+// button only records what to install and restarts; FwUpdate_RunPendingInstall()
+// then downloads it at the next start, right after WiFi connects and before
+// the web server and the other tasks take their memory. The result is shown
+// on the ABOUT page afterwards.
 
-static void doInstall(void)
+#define FW_PENDING_PATH SPIFFS_BASE_PATH "/fw_pending.txt"   // line 1: bin path, line 2: version
+#define FW_RESULT_PATH  SPIFFS_BASE_PATH "/fw_result.txt"    // shown once on ABOUT after the restart
+
+static void writeTextFile(const char *path, const char *text)
 {
-    if (!s_binPath[0]) { setStatus("Press CHECK FOR UPDATE first"); return; }
+    FILE *f = fopen(path, "w");
+    if (f) { fputs(text, f); fclose(f); }
+}
 
-    char url[160];
-    snprintf(url, sizeof(url), FW_UPDATE_URL "%s", s_binPath);
-    char m[160];
-    snprintf(m, sizeof(m), "Downloading %s ... (about a minute, the clock restarts by itself)", s_latest);
-    setStatus(m);
-
+// Downloads url into the spare OTA slot. ESP_OK = complete + verified.
+static esp_err_t otaDownload(const char *url, char *msg, size_t msgsz)
+{
     esp_http_client_config_t http = {
         .url               = url,
         .crt_bundle_attach = esp_crt_bundle_attach,
         .timeout_ms        = 20000,
         .keep_alive_enable = true,
+        .buffer_size       = 2048,   // GitHub Pages response headers exceed the 512 B default
+        .buffer_size_tx    = 512,
         .user_agent        = "LEDClock/" FW_VERSION,
     };
     esp_https_ota_config_t ota = { .http_config = &http };
-    esp_err_t err = esp_https_ota(&ota);
+
+    const char *stage = "connect";
+    unsigned heap = (unsigned)heap_caps_get_free_size(MALLOC_CAP_8BIT);
+    unsigned block = (unsigned)heap_caps_get_largest_free_block(MALLOC_CAP_8BIT);
+    int bytesRead = 0;
+    esp_https_ota_handle_t h = NULL;
+    esp_err_t err = esp_https_ota_begin(&ota, &h);
     if (err == ESP_OK) {
-        snprintf(m, sizeof(m), "Installed %s - restarting...", s_latest);
-        setStatus(m);
-        vTaskDelay(pdMS_TO_TICKS(1500));
+        stage = "download";
+        while ((err = esp_https_ota_perform(h)) == ESP_ERR_HTTPS_OTA_IN_PROGRESS) { }
+        if (err == ESP_OK && !esp_https_ota_is_complete_data_received(h)) { err = ESP_FAIL; stage = "incomplete download"; }
+        bytesRead = esp_https_ota_get_image_len_read(h);
+        if (err == ESP_OK) {
+            stage = "verify";
+            err = esp_https_ota_finish(h);
+        } else {
+            esp_https_ota_abort(h);
+        }
+    }
+    if (err != ESP_OK)
+        snprintf(msg, msgsz, "failed at %s after %d bytes (%s; memory %u, largest block %u)",
+                 stage, bytesRead, esp_err_to_name(err), heap, block);
+    return err;
+}
+
+// Web button: remember what to install, then restart into the install.
+static void doInstall(void)
+{
+    if (!s_binPath[0] || !s_latest[0]) { setStatus("Press CHECK FOR UPDATE first"); return; }
+    char pending[96];
+    snprintf(pending, sizeof(pending), "%s\n%s\n", s_binPath, s_latest);
+    writeTextFile(FW_PENDING_PATH, pending);
+    char m[160];
+    snprintf(m, sizeof(m), "Restarting to install %s - the clock is back in about a minute", s_latest);
+    setStatus(m);
+    vTaskDelay(pdMS_TO_TICKS(2000));   // let the page show the message
+    esp_restart();
+}
+
+typedef struct {
+    char              url[160];
+    char              ver[16];
+    SemaphoreHandle_t done;
+    esp_err_t         err;
+    char              msg[180];
+} BootOtaJob;
+
+static void bootOtaTask(void *arg)
+{
+    BootOtaJob *job = (BootOtaJob *)arg;
+    job->err = otaDownload(job->url, job->msg, sizeof(job->msg));
+    xSemaphoreGive(job->done);
+    vTaskDelete(NULL);
+}
+
+void FwUpdate_RunPendingInstall(void)
+{
+    // Result of an install done at the previous start: show it once on ABOUT.
+    FILE *f = fopen(FW_RESULT_PATH, "r");
+    if (f) {
+        char line[220] = "";
+        if (fgets(line, sizeof(line), f)) {
+            line[strcspn(line, "\r\n")] = '\0';
+            setStatus(line);
+        }
+        fclose(f);
+        remove(FW_RESULT_PATH);
+    }
+
+    f = fopen(FW_PENDING_PATH, "r");
+    if (!f) return;
+    char bin[80] = "", ver[16] = "";
+    if (fgets(bin, sizeof(bin), f)) bin[strcspn(bin, "\r\n")] = '\0';
+    if (fgets(ver, sizeof(ver), f)) ver[strcspn(ver, "\r\n")] = '\0';
+    fclose(f);
+    remove(FW_PENDING_PATH);   // first, so a crash during the install can't loop
+    if (!bin[0]) return;
+
+    BootOtaJob *job = calloc(1, sizeof(BootOtaJob));
+    if (!job) return;
+    snprintf(job->url, sizeof(job->url), FW_UPDATE_URL "%s", bin);
+    strlcpy(job->ver, ver, sizeof(job->ver));
+    job->done = xSemaphoreCreateBinary();
+    ESP_LOGI(TAG, "Installing %s from %s", job->ver, job->url);
+
+    bool started = job->done && xTaskCreate(bootOtaTask, "fw_boot_ota", 8192, job, 5, NULL) == pdPASS;
+    bool finished = started && xSemaphoreTake(job->done, pdMS_TO_TICKS(5 * 60 * 1000)) == pdTRUE;
+
+    char result[220];
+    if (finished && job->err == ESP_OK) {
+        snprintf(result, sizeof(result), "Updated from GitHub: " FW_VERSION " -> %s", job->ver);
+        writeTextFile(FW_RESULT_PATH, result);
+        ESP_LOGI(TAG, "%s - restarting", result);
+        vTaskDelay(pdMS_TO_TICKS(500));
         esp_restart();
     }
-    snprintf(m, sizeof(m), "Install failed (%s) - the old firmware is still running", esp_err_to_name(err));
-    setStatus(m);
+    snprintf(result, sizeof(result), "Install of %s %s - still running " FW_VERSION, job->ver,
+             finished ? job->msg : "did not finish (timeout)");
+    setStatus(result);
+    if (finished) {   // on a timeout the task may still own the job — leave it
+        vSemaphoreDelete(job->done);
+        free(job);
+    }
 }
 
 // =============================================================================
@@ -257,7 +368,7 @@ static const char ABOUT_FW[] =
     "</div>"
     "<div class='save-row'>"
     "<button class='btn btn-bl' onclick='fwGo(\"/fwcheck\")'>CHECK FOR UPDATE</button>"
-    "<button class='btn btn-gn' onclick=\"if(confirm('Install the version from GitHub?\\n\\nThe clock downloads it (about a minute) and restarts.\\nSettings, reminders and birthdays are kept.'))fwGo('/fwinstall')\">INSTALL FROM GITHUB</button>"
+    "<button class='btn btn-gn' onclick=\"if(confirm('Install the version from GitHub?\\n\\nThe clock restarts, downloads it (about a minute) and restarts again.\\nSettings, reminders and birthdays are kept.'))fwGo('/fwinstall')\">INSTALL FROM GITHUB</button>"
     "</div>"
     "<div class='gr'><span class='lbl'>No internet at the clock? Choose a firmware .bin</span>"
     "<span><input type='file' id='fw_file' accept='.bin' style='max-width:180px'>"

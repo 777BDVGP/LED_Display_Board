@@ -1,5 +1,5 @@
 {
-  "version": "1.0.0",
+  "version": "1.0.1",
   "bin": "firmware/ledclock.bin",
-  "notes": "First public version"
+  "notes": "Install from GitHub now restarts first, so the download always has enough memory"
 }
