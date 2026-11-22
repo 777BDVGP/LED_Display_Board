@@ -122,6 +122,13 @@ where to buy everything. The source code is in the
 230&nbsp;V mains: have the mains wiring done or checked by a qualified person.</div>
 </main>
 <script>
+// Local preview (python -m http.server in the repository folder): show the
+// pictures from this PC's Build_Files instead of the published ones.
+if (/^(localhost|127\.0\.0\.1)$/.test(location.hostname)) {
+  document.querySelectorAll('img[src*="raw.githubusercontent.com"]').forEach(function (im) {
+    im.src = im.src.replace(/^https:\/\/raw\.githubusercontent\.com\/777BDVGP\/LED_Display_Board\/main\//, '../');
+  });
+}
 fetch('version.json').then(r=>r.json()).then(j=>{document.getElementById('ver').textContent=j.version;}).catch(()=>{});
 </script>
 </body>

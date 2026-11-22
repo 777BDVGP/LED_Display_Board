@@ -61,9 +61,8 @@ PETG copes better with the warmth of the power supply.
 | `PCB/DevKitC_LED_DRIVER_V14_2026-05-23.zip` | **Gerber files — upload this ZIP to order the board** |
 | `PCB/DevKitC_LED_DRIVER_V14.sch` / `.brd` | Eagle schematic and board (V14, 23 May 2026) |
 
-The board is also shared on PCBWay, ready to order:
-[DevKitC_LED_DRIVER_V14 (W93851ASE128)](https://www.pcbway.com/project/shareproject/W93851ASE128_DevKitC_LED_DRIVER_V14_2026_05_23_c0568fdb.html).
-2 layers, 1.6 mm, default settings.
+**To get the PCB:** upload the Gerber ZIP to [PCBWay](https://www.pcbway.com/)
+(the maker I use and recommend) or any other PCB maker — 2 layers, 1.6 mm, default settings.
 
 **Two ESP32 boards fit — use either one (not both):** the
 **ESP32-DevKitC-32E** in the left-hand socket (U1, marked ESP32-DEVKITC-32E),
@@ -112,7 +111,7 @@ any equivalent part is fine.
 
 | Part | Qty | Notes | Where |
 |---|---|---|---|
-| PCB DevKitC_LED_DRIVER_V14 | 1 | see 1.3 | [PCBWay](https://www.pcbway.com/project/shareproject/W93851ASE128_DevKitC_LED_DRIVER_V14_2026_05_23_c0568fdb.html) |
+| PCB DevKitC_LED_DRIVER_V14 | 1 | Gerber ZIP, see 1.3 | [PCBWay](https://www.pcbway.com/) or any PCB maker |
 | ESP32-DevKitC-32E (original Espressif) | 1 | the controller — **recommended**, especially for more than one clock | [AliExpress](https://www.aliexpress.com/item/1005004441541467.html) |
 | *or* WEMOS D1 Mini ESP32 (USB-C) | (1) | alternative, right-hand socket — fine for a single clock | search "D1 Mini ESP32" |
 | AMS1117-3.3 voltage regulator | 1 | | [AliExpress](https://www.aliexpress.com/item/1005004908874511.html) |
@@ -152,7 +151,7 @@ any equivalent part is fine.
 
 ### Step 1 — Order and cut
 
-1. Order the PCB (PCBWay link above, or upload the Gerber ZIP anywhere).
+1. Order the PCB: upload the Gerber ZIP (see 1.3) to PCBWay or any other PCB maker.
 2. Laser-cut the six DXF files from 3 mm acrylic (the side twice; the front
    from clear acrylic).
 3. Print the STL parts.

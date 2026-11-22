@@ -40,6 +40,10 @@ th{background:var(--bg)}
 <script>
 // The guide's one source is USER_GUIDE.md in the repository; this page shows it.
 var SRC = 'https://raw.githubusercontent.com/777BDVGP/LED_Display_Board/main/USER_GUIDE.md';
+// Local preview (python -m http.server in the repository folder): use the
+// files on this PC instead of the published ones.
+var LOCAL = /^(localhost|127\.0\.0\.1)$/.test(location.hostname);
+if (LOCAL) SRC = '../USER_GUIDE.md';
 var REPO = 'https://github.com/777BDVGP/LED_Display_Board/blob/main/';
 fetch(SRC + '?t=' + Date.now()).then(function (r) {
   if (!r.ok) throw new Error(r.status);
