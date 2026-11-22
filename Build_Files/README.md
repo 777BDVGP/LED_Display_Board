@@ -6,7 +6,8 @@ acrylic panels (DXF), the controller PCB, and the shopping list
 
 ![The finished clock (3D model)](Complete_Clock.jpg)
 
-**Finished size:** about **406 × 96 × 60 mm** (W × H × D) — a 48 × 8 pixel
+**Finished size:** about **406 × 96 × 60 mm** (W × H × D) without the optional
+picture frame (see Step 7) — a 48 × 8 pixel
 display made of six 8 × 8 WS2812B LED panels behind a clear front.
 
 Quantities marked *(estimated)* were worked out from the drawings; check them
@@ -14,9 +15,17 @@ against your own parts.
 
 ---
 
+> **No 3D printer or laser cutter?** The box can just as well be made another
+> way. A laser-cutting or 3D-printing service can make the parts from the
+> DXF / STL files, or use the drawings as a guide to build the box from wood,
+> aluminium or plastic sheet by hand — all that matters is that the six LED
+> panels, the PCB and the power supply fit inside.
+
 ## 1. What you need
 
 ### 1.1 Laser-cut panels (DXF) — 3 mm acrylic (Perspex)
+
+All six DXF files in one download: [`Enclosure_Laser_DXF.zip`](Enclosure_Laser_DXF.zip).
 
 All DXF files are in millimetres, one part per file, drawn at 1 : 1. The
 panels are finger-jointed: the tabs are 3 mm deep, so cut them from
@@ -40,6 +49,8 @@ Holes: 3.0–3.3 mm = M3 screws, 8 mm = ventilation, 5 mm = light sensor,
 6.3 mm square = push-button.
 
 ### 1.2 3D-printed parts (STL)
+
+All six STL files in one download: [`Enclosure_3D_Print_STL.zip`](Enclosure_3D_Print_STL.zip).
 
 Print flat on the bed as exported. Suggested settings *(not critical)*: PETG
 or PLA, 0.2 mm layers, 3 walls, 20–30 % infill, no supports for the brackets.
@@ -249,6 +260,17 @@ Keep the low-voltage wires in the wire supports, away from the mains terminals.
 Fit the clear front window with the front corner mounts and the back cover
 with the back corner mounts (M3). The keyholes in the back cover hang the
 clock on two screws in the wall.
+
+### Optional — a picture frame around it
+
+![The finished clock in a picture frame](FinishBox_Time.jpg)
+
+The bare acrylic box works, but a plain **picture frame** around the front
+makes it look much neater, as in the photos. This is an extra you add
+yourself: buy or make a frame that fits around the box (about 406 × 96 mm
+outside, 60 mm deep) and fix it to the box. No files are needed for it.
+
+![The framed clock showing the date](FinishBox_Date.jpg)
 
 ### Step 8 — Firmware, WiFi and time zone
 

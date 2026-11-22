@@ -54,7 +54,9 @@ and tries again.
 
 ## Hardware — build it yourself
 
-![The finished clock](Build_Files/Complete_Clock.jpg)
+![The finished clock](Build_Files/FinishBox_Time.jpg)
+
+*The finished clock, with an optional picture frame around the acrylic box.*
 
 Everything to build the clock is in [`Build_Files/`](Build_Files) — see its
 **[build guide](Build_Files/README.md)**:
@@ -110,7 +112,8 @@ Optional built-in WiFi networks and default ntfy topics:
 `src/wifi_secrets.example.h` (your copy `wifi_secrets.h` is never committed).
 
 Publishing a new version (maintainer): `python sync_from_private.py`, build,
-`python update_firmware.py "note"`, commit, push.
+`python update_firmware.py "note"`, commit, push. After changing a DXF or STL
+file: `python make_enclosure_zips.py` (rebuilds the two enclosure ZIPs).
 
 ## Licence
 
