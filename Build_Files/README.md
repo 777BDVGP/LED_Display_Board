@@ -70,6 +70,13 @@ The board is also shared on PCBWay, ready to order:
 or the **WEMOS D1 Mini ESP32** in the right-hand socket (marked WEMOS MINI D1
 ESP32). Both work with the same firmware.
 
+> **Recommended: the ESP32-DevKitC-32E** — the original Espressif board (the
+> prototype's came from Espressif's own store on AliExpress, link in the parts
+> list). With a single clock the WEMOS D1 Mini ESP32 worked fine, but with
+> three clocks syncing with each other in the background, the WiFi traffic
+> caused flicker / disturbances on the LED display with the WEMOS. The
+> DevKitC-32E runs clean in that setup.
+
 ![Bare PCB V14](Clock%20PCB%20Picture.jpg)
 
 **Board layout** (Eagle, top copper red, bottom copper blue):
@@ -106,8 +113,8 @@ any equivalent part is fine.
 | Part | Qty | Notes | Where |
 |---|---|---|---|
 | PCB DevKitC_LED_DRIVER_V14 | 1 | see 1.3 | [PCBWay](https://www.pcbway.com/project/shareproject/W93851ASE128_DevKitC_LED_DRIVER_V14_2026_05_23_c0568fdb.html) |
-| ESP32-DevKitC-32E | 1 | the controller — **or** the WEMOS D1 Mini ESP32 below | [AliExpress](https://www.aliexpress.com/item/1005004441541467.html) |
-| *or* WEMOS D1 Mini ESP32 (USB-C) | (1) | alternative controller, right-hand socket | search "D1 Mini ESP32" |
+| ESP32-DevKitC-32E (original Espressif) | 1 | the controller — **recommended**, especially for more than one clock | [AliExpress](https://www.aliexpress.com/item/1005004441541467.html) |
+| *or* WEMOS D1 Mini ESP32 (USB-C) | (1) | alternative, right-hand socket — fine for a single clock | search "D1 Mini ESP32" |
 | AMS1117-3.3 voltage regulator | 1 | | [AliExpress](https://www.aliexpress.com/item/1005004908874511.html) |
 | 5 V active buzzer | 1 | | [AliExpress](https://www.aliexpress.com/item/1005006613648485.html) |
 | 2N2222 NPN transistor (TO-92) | 1 | buzzer driver | any electronics shop |
