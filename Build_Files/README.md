@@ -1,14 +1,16 @@
 # Building the LED Display Board clock
 
 Everything needed to build the clock: the printed parts (STL), the laser-cut
-acrylic panels (DXF), the controller PCB, and the shopping list.
+acrylic panels (DXF), the controller PCB, and the shopping list
+([`SparesList.xlsx`](SparesList.xlsx)).
 
 ![The finished clock (3D model)](Complete_Clock.jpg)
 
 **Finished size:** about **406 × 96 × 60 mm** (W × H × D) — a 48 × 8 pixel
 display made of six 8 × 8 WS2812B LED panels behind a clear front.
 
-> ❓ = still to be confirmed by the maintainer — see *Open points* at the end.
+Quantities marked *(estimated)* were worked out from the drawings; check them
+against your own parts.
 
 ---
 
@@ -22,30 +24,34 @@ panels are finger-jointed: the tabs are 3 mm deep, so cut them from
 
 | File | Qty | Size (mm) | What it is |
 |---|---|---|---|
-| `FrontClearCover.dxf` | 1 | 400 × 90 | Clear front window in front of the LEDs ❓ colour / tint |
-| `LEDBackplate.dxf` | 1 | 406 × 96 | Carries the six LED panels (connector slots, mounting holes) |
-| `TopCover.dxf` | 1 | 406 × 60 | Top, with ventilation holes and slots for the front / back |
-| `BottomCover.dxf` | 1 | 406 × 60 | Bottom, with ventilation holes and a rectangular cut-out ❓ (cable entry?) |
+| `FrontClearCover.dxf` | 1 | 400 × 90 | Front window in front of the LEDs — **clear** acrylic |
+| `LEDBackplate.dxf` | 1 | 406 × 96 | Carries the six LED panels; the push-button and light sensor look through it |
+| `TopCover.dxf` | 1 | 406 × 60 | Top, with ventilation holes |
+| `BottomCover.dxf` | 1 | 406 × 60 | Bottom, with ventilation holes and an 18 × 8 mm slot for the mains cable |
 | `SideCoverx2.dxf` | **2** | 60 × 96 | Left and right side (cut the file twice) |
 | `BackCover.dxf` | 1 | 400 × 90 | Back cover, with two keyhole slots to hang the clock on the wall |
 
-Total sheet needed: roughly 410 × 400 mm of 3 mm acrylic (front in clear,
-the rest ❓ colour — the clock in the pictures is black).
+**Sheet needed (estimated):** one piece of **clear** 3 mm acrylic about
+410 × 100 mm for the front window, and about **410 × 400 mm** of 3 mm acrylic
+in the colour of your choice for the other six panels (the clock in the
+pictures is black). Leave a few mm between parts for the laser.
 
-Holes: 3.2 mm = clearance for M3 screws, 8 mm = ventilation.
+Holes: 3.0–3.3 mm = M3 screws, 8 mm = ventilation, 5 mm = light sensor,
+6.3 mm square = push-button.
 
 ### 1.2 3D-printed parts (STL)
 
-Print flat on the bed as exported (all parts are 8 mm high except the radar
-holder and the wire support). ❓ filament (PLA / PETG), layer height, infill.
+Print flat on the bed as exported. Suggested settings *(not critical)*: PETG
+or PLA, 0.2 mm layers, 3 walls, 20–30 % infill, no supports for the brackets.
+PETG copes better with the warmth of the power supply.
 
 | File | Qty | Size (mm) | What it does |
 |---|---|---|---|
-| `FrontCorrnerMount.stl` | 4 ❓ | 20 × 20 × 8 | Corner brackets that hold the front window to the box |
-| `BackCornerMount.stl` | 4 ❓ | 20 × 20 × 8 | Corner brackets that hold the back cover to the box |
+| `FrontCorrnerMount.stl` | 4 | 20 × 20 × 8 | Corner brackets that hold the front window to the box |
+| `BackCornerMount.stl` | 4 | 20 × 20 × 8 | Corner brackets that hold the back cover to the box |
 | `PCBSupport.stl` | 1 | 126 × 82 × 8 | Holds the controller PCB on the LED backplate |
 | `PowerSupplySupport.stl` | 1 | 121 × 82 × 8 | Holds the 5 V power supply on the LED backplate |
-| `WireSupport.stl` | 2 ❓ | 57 × 12 × 23 | Wire trays / cable guides between the PCB and the power supply |
+| `WireSupport.stl` | 2 | 57 × 12 × 23 | Wire trays / cable guides between the PCB and the power supply |
 | `Radar_Pusbbotto_LigthSense_Holder.stl` | 1 | 75 × 16 × 16 | Holds the radar sensor, the push-button and the light sensor (LDR) |
 
 ### 1.3 Controller PCB
@@ -62,7 +68,7 @@ socket) — the right-hand footprint fits a WEMOS D1 Mini ESP32 instead.
 
 ![Bare PCB](Clock%20PCB.jpg)
 
-### 1.4 Parts list (from `SparesList.xlsx`)
+### 1.4 Parts list (also in [`SparesList.xlsx`](SparesList.xlsx))
 
 Links are to the sellers used for the prototype (AliExpress unless noted);
 any equivalent part is fine.
@@ -80,8 +86,8 @@ any equivalent part is fine.
 | KF2510 plug housing, 3 pin | 3 | | (same link) |
 | KF2510 plug housing, 2 pin | 4 | | (same link) |
 | Microwave radar module, 10.525 GHz | 1 | wakes the display when someone is near | [AliExpress](https://www.aliexpress.com/item/1005007724089709.html) |
-| GL5528 LDR (light-dependent resistor) | 1 | automatic brightness | [AliExpress](https://www.aliexpress.com/item/1005010099979166.html) |
-| 5 V power supply, LM35-23B05 (35 W, enclosed, 230 V AC in) | 1 | Mornsun | [AliExpress](https://www.aliexpress.com/item/1005013142197519.html) |
+| GL5528 LDR (light-dependent resistor), 5 mm | 1 | automatic brightness | [AliExpress](https://www.aliexpress.com/item/1005010099979166.html) |
+| 5 V power supply, Mornsun LM35-23B05 (35 W, enclosed, 230 V AC in) | 1 | | [AliExpress](https://www.aliexpress.com/item/1005013142197519.html) |
 
 **On the PCB**
 
@@ -91,25 +97,34 @@ any equivalent part is fine.
 | ESP32-DevKitC (ESP32-32E) | 1 | the controller | [AliExpress](https://www.aliexpress.com/item/1005004441541467.html) |
 | AMS1117-3.3 voltage regulator | 1 | | [AliExpress](https://www.aliexpress.com/item/1005004908874511.html) |
 | 5 V active buzzer | 1 | | [AliExpress](https://www.aliexpress.com/item/1005006613648485.html) |
+| 2N2222 NPN transistor (TO-92) | 1 | buzzer driver | any electronics shop |
 | Optocoupler (LTV316 footprint, EL817C fits) | 1 | | [AliExpress](https://www.aliexpress.com/item/1005011924740055.html) |
-| SN74AHCT1G126DBVR buffer (3.3 V → 5 V for the LED data line) | 1 | ❓ the PCB is marked ...1G125 | [AliExpress](https://www.aliexpress.com/item/1005005936926220.html) |
+| **SN74AHCT1G125DBVR** buffer (SOT-23-5) | 1 | 3.3 V → 5 V for the LED data line — see the note below | search "SN74AHCT1G125DBVR" |
 | 220 µF / 25 V electrolytic capacitor | 3 | | [AliExpress](https://www.aliexpress.com/item/1005002075527957.html) |
 | 0.1 µF ceramic capacitor | 2 | | [AliExpress](https://www.aliexpress.com/item/1005002290441861.html) |
-| 0805 SMD resistors: 10k, 4k7, 330R (and 8R ❓) | 1 kit | 0R links can be bridged with solder | [AliExpress](https://www.aliexpress.com/item/4001321720241.html) |
+| 0805 SMD resistors: 10k (2), 4k7 (1), 330R (1) | 1 kit | | [AliExpress](https://www.aliexpress.com/item/4001321720241.html) |
 | KF2510 male header, 4 pin | 1 | | [AliExpress](https://www.aliexpress.com/item/1005005909025593.html) |
 | KF2510 male header, 3 pin | 2 | | (same link) |
 | KF2510 male header, 2 pin | 2 | | (same link) |
 | 2.54 mm male header, 40 pin | 1 | the two rows for the ESP32 socket | [AliExpress](https://www.aliexpress.com/item/1005006181780843.html) |
-| 2.54 mm male header, 10 pin | 1 | cut into five 2-pin jumpers | (same link) |
-| 2.54 mm jumper (shunt) | 2 | LINK 3.3V / LINK 5V | [AliExpress](https://www.aliexpress.com/item/1005011561770509.html) |
-| 2N2222 transistor | 1 | buzzer driver ❓ not in the spreadsheet | |
+| 2.54 mm male header, 10 pin | 1 | cut into 2-pin headers | (same link) |
+| 2.54 mm jumper (shunt) | 2 | not needed with the DevKitC (see step 2) | [AliExpress](https://www.aliexpress.com/item/1005011561770509.html) |
 
-**Not in the spreadsheet yet ❓**
+> **Buffer chip — use the 1G125, not the 1G126.** On this board the enable
+> pin (`!OE`) is tied to ground, which switches a **1G125** on. A 1G126 has
+> the opposite enable and would keep the LED data line off — the display
+> stays dark.
 
-- Push-button (stop / dismiss a message) — type and size for the holder
-- M3 screws, nuts or brass inserts for the corner mounts and supports (lengths / quantities)
-- Mains cable, plug, and how it enters the box (cable gland / grommet?)
-- Hook-up wire for the LED panels and the radar / button / LDR
+**Extra parts** *(estimated from the drawings)*
+
+| Part | Qty | Notes |
+|---|---|---|
+| Tactile push-button, 6 × 6 mm, tall stem (about 13 mm) | 1 | stop / dismiss a message — pressed through the 4 mm hole in the front window |
+| M3 × 10 mm screws | 60 | 16 for the corner mounts, 18 for the supports and holders, 24 for the LED panels |
+| M3 nuts (or M3 brass heat-set inserts in the printed parts) | 60 | |
+| Mains cable with plug, 2-core 0.75 mm², about 2 m | 1 | through the 18 × 8 mm slot in the bottom; a cable tie inside as strain relief |
+| Hook-up wire, 22 AWG stranded | 3 colours × 2 m | red (5 V), black (GND), one colour for data |
+| Small cable ties (100 mm) | 20 | wires along the wire supports |
 
 ---
 
@@ -118,52 +133,62 @@ any equivalent part is fine.
 ### Step 1 — Order and cut
 
 1. Order the PCB (PCBWay link above, or upload the Gerber ZIP anywhere).
-2. Laser-cut the six DXF files from 3 mm acrylic (the side twice).
+2. Laser-cut the six DXF files from 3 mm acrylic (the side twice; the front
+   from clear acrylic).
 3. Print the STL parts.
 
 ### Step 2 — Solder the PCB
 
-Solder the SMD parts first (regulator, buffer, resistors), then the
-through-hole parts (optocoupler, 2N2222, capacitors, buzzer, KF2510 headers,
-the two header rows for the ESP32, cut from the 40-pin strip). Fit the jumpers on LINK 3.3V /
-LINK 5V ❓ (which position for the DevKitC). Plug the ESP32 DevKitC in.
+![Bare PCB V14](Clock%20PCB.jpg)
+
+1. SMD parts first: the AMS1117 regulator, the SN74AHCT1G125 buffer and the
+   0805 resistors.
+2. **R11 (marked "8R" / 0R, next to the buffer) is a 0 Ω link** — just bridge
+   its two pads with solder.
+3. Through-hole parts: the optocoupler, the 2N2222, the capacitors, the buzzer
+   (+ marked), the KF2510 headers, and the two header rows for the ESP32
+   (cut from the 40-pin strip).
+4. **LINK 3.3V and LINK 5V: leave both open** (no jumpers) for the ESP32
+   DevKitC.
+5. Plug the ESP32 DevKitC into the left-hand socket.
 
 PCB connectors (silkscreen, GPIO in brackets):
 
-| Connector | Goes to |
-|---|---|
-| POWER +5V (4 pin) | 5 V power supply |
-| OUT ST (33) | data in of the first LED panel |
-| RADAR / IN (23) | radar module |
-| INPUT (27) | push-button |
-| BUZZER (17) | on-board buzzer |
-| LDR (35) ❓ connector name | light sensor |
+| Connector | Pins | Goes to |
+|---|---|---|
+| POWER +5V | 4 | 5 V power supply (− − + +) |
+| OUT ST (33) | 3 | data in of the first LED panel (+ / OUT / −) |
+| LD1020 / RADAR (23) | 3 | radar module |
+| INPUT (27) | 2 | push-button |
+| LDR (35) | 2 | light sensor (top left) |
+| BUZZER (17) | — | the buzzer sits on the board |
 
 ### Step 3 — LED panels on the backplate
 
 ![LED panels on the backplate](LEDBackplate_with_LED_Matrix.jpg)
 
-Fit the six 8 × 8 panels side by side on the front of the LED backplate,
-connectors through the rectangular slots. Chain them with 3-pin Dupont leads (5 V, GND,
-data): data out of one panel to data in of the next ❓ which panel is first
-(left or right as seen from the front), and whether 5 V is fed only through
-the chain or to more than one panel.
+Fit the six 8 × 8 panels side by side on the front of the LED backplate with
+M3 screws (4 per panel), their connectors through the rectangular slots.
+Chain them with short 3-pin Dupont leads (5 V, GND, data): data out of one
+panel to data in of the next. The first panel's data in goes to OUT ST (33)
+on the PCB.
 
 ### Step 4 — Printed supports on the back of the backplate
 
 ![Printed supports](LEDBackplate_with_Printed_Supports.jpg)
 
 Screw the **PCB support** (left) and the **power-supply support** (right) to
-the back of the LED backplate, the **wire supports** in between, the
-**radar / button / LDR holder** at the bottom edge, and the corner mounts in
-the four corners.
+the back of the LED backplate, the two **wire supports** in between, and the
+**radar / button / LDR holder** at the bottom edge — the push-button behind
+the square hole and the LDR behind the 5 mm hole. Fit the corner mounts in the
+four corners.
 
 ### Step 5 — Box
 
 ![Backplate with sides and bottom](LEDBackplate_with_more_sides.jpg)
 
 Push the finger joints together: bottom, sides and top around the LED
-backplate. ❓ glued (acrylic cement) or held only by the corner mounts?
+backplate, and screw them to the corner mounts (M3).
 
 ### Step 6 — PCB, power supply and wiring
 
@@ -171,13 +196,13 @@ backplate. ❓ glued (acrylic cement) or held only by the corner mounts?
 
 Mount the PCB on its support and the power supply on its support. Wire:
 
-- 230 V mains → power supply input (L / N / earth). **Mains: have this done
-  or checked by a qualified person.**
-- Power supply 5 V output → PCB POWER and → the LED panels (the panels draw
-  the most current; feed them directly, not through the PCB ❓).
+- Mains cable in through the slot in the bottom, a cable tie inside as strain
+  relief, to the power-supply input (L / N, and earth if your cable has it).
+  **Mains: have this done or checked by a qualified person.**
+- Power-supply 5 V output → PCB **POWER +5V** and → the LED panels.
 - PCB → first LED panel data, radar, push-button, LDR.
 
-Keep the wires in the wire trays, away from the mains terminals.
+Keep the low-voltage wires in the wire supports, away from the mains terminals.
 
 ![Inside the finished clock](Clock%20Open%20from%20the%20back.jpg)
 
@@ -193,18 +218,3 @@ Install the firmware from the [install page](https://777bdvgp.github.io/LED_Disp
 (Chrome or Edge, USB cable to the ESP32 — before closing the back), then
 connect a phone to the **LEDClock-Setup** hotspot and choose your WiFi. See
 the main [README](../README.md).
-
----
-
-## Open points ❓
-
-To be filled in by the maintainer:
-
-1. Acrylic colour of the box, and the front window (clear / tinted).
-2. Filament and print settings; quantities of the corner mounts and wire supports.
-3. Push-button type; screws / inserts (size, length, how many); mains cable entry.
-4. Is the box glued or only screwed together?
-5. Buffer chip: SN74AHCT1G126 (spreadsheet) or 1G125 (PCB silkscreen)?
-6. 2N2222 and the 8R resistor — add to the spreadsheet?
-7. LED panel order / direction and how they get their 5 V.
-8. LINK 3.3V / LINK 5V jumper positions for the DevKitC.
