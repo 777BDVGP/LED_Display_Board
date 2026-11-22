@@ -11,6 +11,9 @@ on one clock and the others get it within seconds.
 
 **Install page, pictures and updates:** https://777bdvgp.github.io/LED_Display_Board/
 
+**How to use it — every page and setting:** [USER_GUIDE.md](USER_GUIDE.md)
+· **How to build it:** [Build_Files/README.md](Build_Files/README.md)
+
 > **Time zone:** Greenwich (GMT) out of the box — choose yours on
 > SETTINGS → TIME ZONE (daylight saving switches by itself).
 
