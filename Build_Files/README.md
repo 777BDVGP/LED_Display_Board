@@ -66,7 +66,7 @@ The board is also shared on PCBWay, ready to order:
 2 layers, 1.6 mm, default settings. It takes an **ESP32 DevKitC** (left
 socket) — the right-hand footprint fits a WEMOS D1 Mini ESP32 instead.
 
-![Bare PCB](Clock%20PCB.jpg)
+![Bare PCB V14](Clock%20PCB%20Picture.jpg)
 
 ### 1.4 Parts list (also in [`SparesList.xlsx`](SparesList.xlsx))
 
@@ -98,11 +98,11 @@ any equivalent part is fine.
 | AMS1117-3.3 voltage regulator | 1 | | [AliExpress](https://www.aliexpress.com/item/1005004908874511.html) |
 | 5 V active buzzer | 1 | | [AliExpress](https://www.aliexpress.com/item/1005006613648485.html) |
 | 2N2222 NPN transistor (TO-92) | 1 | buzzer driver | any electronics shop |
-| Optocoupler (LTV316 footprint, EL817C fits) | 1 | | [AliExpress](https://www.aliexpress.com/item/1005011924740055.html) |
+| Optocoupler LTV816 (EL817C fits the same footprint) | 1 | | [AliExpress](https://www.aliexpress.com/item/1005011924740055.html) |
 | **SN74AHCT1G125DBVR** buffer (SOT-23-5) | 1 | 3.3 V → 5 V for the LED data line — see the note below | search "SN74AHCT1G125DBVR" |
 | 220 µF / 25 V electrolytic capacitor | 3 | | [AliExpress](https://www.aliexpress.com/item/1005002075527957.html) |
 | 0.1 µF ceramic capacitor | 2 | | [AliExpress](https://www.aliexpress.com/item/1005002290441861.html) |
-| 0805 SMD resistors: 10k (2), 4k7 (1), 330R (1) | 1 kit | | [AliExpress](https://www.aliexpress.com/item/4001321720241.html) |
+| 0805 SMD resistors: 10K (2), 4K7 (1), 330R (1) | 1 kit | | [AliExpress](https://www.aliexpress.com/item/4001321720241.html) |
 | KF2510 male header, 4 pin | 1 | | [AliExpress](https://www.aliexpress.com/item/1005005909025593.html) |
 | KF2510 male header, 3 pin | 2 | | (same link) |
 | KF2510 male header, 2 pin | 2 | | (same link) |
@@ -139,18 +139,28 @@ any equivalent part is fine.
 
 ### Step 2 — Solder the PCB
 
-![Bare PCB V14](Clock%20PCB.jpg)
 
-1. SMD parts first: the AMS1117 regulator, the SN74AHCT1G125 buffer and the
-   0805 resistors.
-2. **R11 (marked "8R" / 0R, next to the buffer) is a 0 Ω link** — just bridge
-   its two pads with solder.
-3. Through-hole parts: the optocoupler, the 2N2222, the capacitors, the buzzer
+Look at the photo of the bare board above: every part position is marked on
+the board.
+
+1. SMD parts first: the AMS1117 regulator (bottom, "3.3VOLT"), the
+   SN74AHCT1G125 buffer (top middle) and the 0805 resistors along the top
+   edge, left to right:
+
+   | Marking | Part |
+   |---|---|
+   | 10K | 10 kΩ, left of the buffer |
+   | 0R | **0 Ω link — no resistor, just bridge the two pads with solder** |
+   | 4K7 | 4.7 kΩ, right of the 2N2222 |
+   | 330R | 330 Ω, under INPUT (27) |
+   | 10K | 10 kΩ, under INPUT (27) |
+
+2. Through-hole parts: the LTV816 optocoupler, the 2N2222, the capacitors, the buzzer
    (+ marked), the KF2510 headers, and the two header rows for the ESP32
    (cut from the 40-pin strip).
-4. **LINK 3.3V and LINK 5V: leave both open** (no jumpers) for the ESP32
+3. **LINK 3.3V and LINK 5V: leave both open** (no jumpers) for the ESP32
    DevKitC.
-5. Plug the ESP32 DevKitC into the left-hand socket.
+4. Plug the ESP32 DevKitC into the left-hand socket (U1).
 
 PCB connectors (silkscreen, GPIO in brackets):
 
@@ -160,7 +170,7 @@ PCB connectors (silkscreen, GPIO in brackets):
 | OUT ST (33) | 3 | data in of the first LED panel (+ / OUT / −) |
 | LD1020 / RADAR (23) | 3 | radar module |
 | INPUT (27) | 2 | push-button |
-| LDR (35) | 2 | light sensor (top left) |
+| LDR (35) | 2 | light sensor (top left; GPIO 35 of the ESP32) |
 | BUZZER (17) | — | the buzzer sits on the board |
 
 ### Step 3 — LED panels on the backplate
