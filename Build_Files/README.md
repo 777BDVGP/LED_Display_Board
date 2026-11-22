@@ -193,6 +193,7 @@ PCB connectors (silkscreen, GPIO in brackets):
 | INPUT (27) | 2 | push-button |
 | LDR (35) | 2 | light sensor (top left; GPIO 35 of the ESP32) |
 | BUZZER (17) | — | the buzzer sits on the board |
+| 5VSUP | 2 | spare 5 V (+) and GND pick-up point (bottom) — optional, leave open unless you need 5 V for something extra |
 
 ### Step 3 — LED panels on the backplate
 
