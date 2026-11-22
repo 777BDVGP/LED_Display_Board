@@ -1,0 +1,16 @@
+{
+  "name": "LED Display Board",
+  "version": "1.0.0",
+  "new_install_prompt_erase": true,
+  "builds": [
+    {
+      "chipFamily": "ESP32",
+      "parts": [
+        {
+          "path": "firmware/ledclock_full.bin",
+          "offset": 0
+        }
+      ]
+    }
+  ]
+}
