@@ -11,8 +11,8 @@ on one clock and the others get it within seconds.
 
 **Install page, pictures and updates:** https://777bdvgp.github.io/LED_Display_Board/
 
-> **Status:** first public version. Still to come: bill of materials, assembly
-> notes, a time-zone setting (the clock runs on South African time, UTC+2).
+> **Status:** first public version. Still to come: a time-zone setting (the
+> clock runs on South African time, UTC+2).
 
 ## Features
 
@@ -48,15 +48,23 @@ If none can be reached for a few minutes, the **LEDClock-Setup** hotspot opens
 for 5 minutes so you can add a network from a phone, then the clock restarts
 and tries again.
 
-## Hardware
+## Hardware — build it yourself
 
-- `PCB/` — Eagle schematic + board (V14) and the Gerber ZIP to order the board.
-  It takes an **ESP32 DevKitC** or a **WEMOS D1 Mini ESP32**.
-- `Enclosure/` — STL files to 3D-print (corner mounts, PCB / power-supply /
-  radar / wire supports) and DXF files to cut (back, sides, top / bottom
-  covers, clear front, LED backplate).
-- The clock is powered from 230 V mains through a small enclosed power supply —
-  have the mains wiring done or checked by a qualified person.
+![The finished clock](Build_Files/Complete_Clock.jpg)
+
+Everything to build the clock is in [`Build_Files/`](Build_Files) — see its
+**[build guide](Build_Files/README.md)**:
+
+- STL files to 3D-print (corner mounts, PCB / power-supply / wire supports,
+  radar + button + light-sensor holder),
+- DXF files to laser-cut from 3 mm acrylic (front window, LED backplate, top,
+  bottom, sides, back),
+- `Build_Files/PCB/` — Eagle schematic + board (V14) and the Gerber ZIP to
+  order the board (takes an **ESP32 DevKitC** or a **WEMOS D1 Mini ESP32**),
+- `SparesList.xlsx` — every part with where to buy it.
+
+The clock is powered from 230 V mains through a small enclosed power supply —
+have the mains wiring done or checked by a qualified person.
 
 ## Pin map
 
