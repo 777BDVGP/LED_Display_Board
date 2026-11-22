@@ -17,7 +17,7 @@
 
 #include "esp_http_server.h"
 
-#define FW_VERSION     "1.0.1"
+#define FW_VERSION     "1.0.2"
 #define FW_UPDATE_URL  "https://777bdvgp.github.io/LED_Display_Board/"
 
 // Registers POST /fwcheck, POST /fwinstall, GET /fwstatus, POST /fwupload.

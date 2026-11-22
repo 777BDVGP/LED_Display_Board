@@ -1,5 +1,5 @@
 {
-  "version": "1.0.1",
+  "version": "1.0.2",
   "bin": "firmware/ledclock.bin",
-  "notes": "Install from GitHub now restarts first, so the download always has enough memory"
+  "notes": "Less memory needed for HTTPS: CHECK FOR UPDATE works reliably"
 }
