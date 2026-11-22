@@ -60,7 +60,8 @@ Everything to build the clock is in [`Build_Files/`](Build_Files) — see its
 - DXF files to laser-cut from 3 mm acrylic (front window, LED backplate, top,
   bottom, sides, back),
 - `Build_Files/PCB/` — Eagle schematic + board (V14) and the Gerber ZIP to
-  order the board (takes an **ESP32 DevKitC** or a **WEMOS D1 Mini ESP32**),
+  order the board (takes an **ESP32-DevKitC-32E** or a **WEMOS D1 Mini ESP32** —
+  either one works),
 - `SparesList.xlsx` — every part with where to buy it.
 
 The clock is powered from 230 V mains through a small enclosed power supply —

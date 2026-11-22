@@ -63,8 +63,12 @@ PETG copes better with the warmth of the power supply.
 
 The board is also shared on PCBWay, ready to order:
 [DevKitC_LED_DRIVER_V14 (W93851ASE128)](https://www.pcbway.com/project/shareproject/W93851ASE128_DevKitC_LED_DRIVER_V14_2026_05_23_c0568fdb.html).
-2 layers, 1.6 mm, default settings. It takes an **ESP32 DevKitC** (left
-socket) — the right-hand footprint fits a WEMOS D1 Mini ESP32 instead.
+2 layers, 1.6 mm, default settings.
+
+**Two ESP32 boards fit — use either one (not both):** the
+**ESP32-DevKitC-32E** in the left-hand socket (U1, marked ESP32-DEVKITC-32E),
+or the **WEMOS D1 Mini ESP32** in the right-hand socket (marked WEMOS MINI D1
+ESP32). Both work with the same firmware.
 
 ![Bare PCB V14](Clock%20PCB%20Picture.jpg)
 
@@ -102,21 +106,22 @@ any equivalent part is fine.
 | Part | Qty | Notes | Where |
 |---|---|---|---|
 | PCB DevKitC_LED_DRIVER_V14 | 1 | see 1.3 | [PCBWay](https://www.pcbway.com/project/shareproject/W93851ASE128_DevKitC_LED_DRIVER_V14_2026_05_23_c0568fdb.html) |
-| ESP32-DevKitC (ESP32-32E) | 1 | the controller | [AliExpress](https://www.aliexpress.com/item/1005004441541467.html) |
+| ESP32-DevKitC-32E | 1 | the controller — **or** the WEMOS D1 Mini ESP32 below | [AliExpress](https://www.aliexpress.com/item/1005004441541467.html) |
+| *or* WEMOS D1 Mini ESP32 (USB-C) | (1) | alternative controller, right-hand socket | search "D1 Mini ESP32" |
 | AMS1117-3.3 voltage regulator | 1 | | [AliExpress](https://www.aliexpress.com/item/1005004908874511.html) |
 | 5 V active buzzer | 1 | | [AliExpress](https://www.aliexpress.com/item/1005006613648485.html) |
 | 2N2222 NPN transistor (TO-92) | 1 | buzzer driver | any electronics shop |
 | Optocoupler LTV816 (EL817C fits the same footprint) | 1 | | [AliExpress](https://www.aliexpress.com/item/1005011924740055.html) |
 | **SN74AHCT1G125DBVR** buffer (SOT-23-5) | 1 | 3.3 V → 5 V for the LED data line — see the note below | search "SN74AHCT1G125DBVR" |
-| 220 µF / 25 V electrolytic capacitor | 3 | | [AliExpress](https://www.aliexpress.com/item/1005002075527957.html) |
-| 0.1 µF ceramic capacitor | 2 | | [AliExpress](https://www.aliexpress.com/item/1005002290441861.html) |
+| 220 µF / 25 V electrolytic capacitor | 3 | C2, C3 + C7 (DevKitC) or C6 (WEMOS) | [AliExpress](https://www.aliexpress.com/item/1005002075527957.html) |
+| 0.1 µF ceramic capacitor | 2 | C1 + C4 (DevKitC) or C5 (WEMOS) | [AliExpress](https://www.aliexpress.com/item/1005002290441861.html) |
 | 0805 SMD resistors: 10K (2), 4K7 (1), 330R (1) | 1 kit | | [AliExpress](https://www.aliexpress.com/item/4001321720241.html) |
 | KF2510 male header, 4 pin | 1 | | [AliExpress](https://www.aliexpress.com/item/1005005909025593.html) |
 | KF2510 male header, 3 pin | 2 | | (same link) |
 | KF2510 male header, 2 pin | 2 | | (same link) |
-| 2.54 mm male header, 40 pin | 1 | the two rows for the ESP32 socket | [AliExpress](https://www.aliexpress.com/item/1005006181780843.html) |
+| 2.54 mm male header, 40 pin | 1 | the header rows for the ESP32 socket you use | [AliExpress](https://www.aliexpress.com/item/1005006181780843.html) |
 | 2.54 mm male header, 10 pin | 1 | cut into 2-pin headers | (same link) |
-| 2.54 mm jumper (shunt) | 2 | not needed with the DevKitC (see step 2) | [AliExpress](https://www.aliexpress.com/item/1005011561770509.html) |
+| 2.54 mm jumper (shunt) | 2 | one on LINK 5V (see step 2), one spare | [AliExpress](https://www.aliexpress.com/item/1005011561770509.html) |
 
 > **Buffer chip — use the 1G125, not the 1G126.** On this board the enable
 > pin (`!OE`) is tied to ground, which switches a **1G125** on. A 1G126 has
@@ -163,12 +168,20 @@ the board.
    | 330R | 330 Ω, under INPUT (27) |
    | 10K | 10 kΩ, under INPUT (27) |
 
-2. Through-hole parts: the LTV816 optocoupler, the 2N2222, the capacitors, the buzzer
-   (+ marked), the KF2510 headers, and the two header rows for the ESP32
-   (cut from the 40-pin strip).
-3. **LINK 3.3V and LINK 5V: leave both open** (no jumpers) for the ESP32
-   DevKitC.
-4. Plug the ESP32 DevKitC into the left-hand socket (U1).
+2. Through-hole parts: the LTV816 optocoupler, the 2N2222, the buzzer
+   (+ marked), the KF2510 headers, and the header rows for the ESP32 socket
+   you use (cut from the 40-pin strip).
+3. Capacitors — C1, C2, C3 always, plus the pair next to the ESP32 you use:
+
+   | ESP32 board | Socket | Fit | Leave empty |
+   |---|---|---|---|
+   | ESP32-DevKitC-32E | left (U1) | C7 (220 µF) + C4 (0.1 µF) | C6, C5 |
+   | WEMOS D1 Mini ESP32 | right | C6 (220 µF) + C5 (0.1 µF) | C7, C4 |
+
+4. Jumpers: **LINK 5V fitted, LINK 3.3V open.** LINK 5V gives the ESP32 board
+   its 5 V and it makes its own 3.3 V; LINK 3.3V would tie the PCB's AMS1117
+   to the ESP32's 3.3 V — leave it open.
+5. Plug the ESP32 into its socket — one board only.
 
 PCB connectors (silkscreen, GPIO in brackets):
 
