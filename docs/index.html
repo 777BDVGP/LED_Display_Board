@@ -50,13 +50,16 @@ no cloud, no app. ESP32 (DevKitC or WEMOS D1 Mini ESP32).</p>
 </ol>
 </div>
 
-<h2>First start: choose your WiFi</h2>
+<h2>First start: WiFi and time zone</h2>
 <ol>
 <li>The new clock opens its own WiFi hotspot <b>LEDClock-Setup</b> (the blue LED blinks fast).</li>
 <li>Connect a phone to it &mdash; the setup page opens by itself (otherwise browse to <code>http://192.168.4.1/</code>).</li>
 <li>Pick your network, type the password, choose a <b>fixed IP</b> (recommended) or <b>Automatic (DHCP)</b>,
     press <b>SAVE &amp; RESTART</b>.</li>
 <li>Put the phone back on your normal WiFi and open <code>http://&lt;the clock's IP&gt;/</code>.</li>
+<li>Go to <b>SETTINGS &rarr; TIME ZONE</b>. The clock starts on <b>Greenwich (GMT)</b>: pick your zone from the
+    list (26 zones; daylight saving switches by itself where the zone has it) and press <b>UPDATE</b> &mdash;
+    the new time shows straight away. With several clocks, set it on each one.</li>
 </ol>
 <p>More networks: <b>OTHER &rarr; WIFI NETWORKS</b> lists them with <b>DELETE</b> and <b>ADD NETWORK</b>
 (passwords are never shown). The clock tries the saved networks in range, strongest first. If none can be reached
@@ -71,7 +74,6 @@ download leaves the old firmware running.</p>
 
 <h2>After installing</h2>
 <ul>
-<li><b>SETTINGS &rarr; TIME ZONE</b>: the clock starts on Greenwich (GMT) &mdash; choose your zone first; daylight saving switches by itself.</li>
 <li><b>SETTINGS</b>: the clock's name, display brightness (light sensor), day / night colours, how long the
     display stays on after the radar sees someone, and the buzzer patterns.</li>
 <li><b>BIRTHDAYS / ANNIVERSARYS / REMINDERS</b>: add your dates. Reminders can repeat daily, weekly, monthly or
