@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>LED Display Board Installer</title>
+<script type="module" src="https://unpkg.com/esp-web-tools@10.0.1/dist/web/install-button.js?module"></script>
+<style>
+:root{--bg:#f6f7f9;--card:#fff;--fg:#1f2933;--muted:#5f6b7a;--line:#d9dee5;--acc:#0369a1;--warn:#b45309}
+@media (prefers-color-scheme:dark){:root{--bg:#0f172a;--card:#1e293b;--fg:#e2e8f0;--muted:#94a3b8;--line:#334155;--acc:#38bdf8;--warn:#f59e0b}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
+main{max-width:760px;margin:0 auto;padding:24px 16px 48px}
+h1{font-size:1.6rem;margin:0 0 4px}
+h2{font-size:1.15rem;margin:28px 0 8px}
+p{margin:6px 0}
+.sub{color:var(--muted);margin-bottom:20px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px;margin:12px 0}
+.card h3{margin:0 0 4px;font-size:1.05rem}
+.ver{font-size:.85rem;color:var(--muted)}
+ol,ul{padding-left:22px}li{margin:4px 0}
+.note{border-left:4px solid var(--warn);background:var(--card);padding:10px 14px;border-radius:6px;margin:16px 0}
+.unsupported{display:none;color:var(--warn);font-weight:600}
+esp-web-install-button[install-unsupported] .unsupported{display:block}
+a{color:var(--acc)}
+code{background:var(--card);border:1px solid var(--line);border-radius:4px;padding:0 4px;word-break:break-all}
+figure{margin:12px 0}figure img{width:100%;border-radius:8px;border:1px solid var(--line)}
+figcaption{font-size:.85rem;color:var(--muted);margin-top:4px}
+table{border-collapse:collapse;width:100%;font-size:.92rem}td,th{border-bottom:1px solid var(--line);padding:4px 6px;text-align:left}
+</style>
+</head>
+<body>
+<main>
+<h1>LED Display Board</h1>
+<p class="sub">A WiFi LED-matrix clock for the house: the time, plus birthdays, anniversaries and reminders scrolled on
+the day, with a buzzer, a radar sensor that wakes the display, and phone notifications through ntfy.
+Several clocks in one house keep each other in sync. Everything is set up from its own web pages on your WiFi &mdash;
+no cloud, no app. ESP32 (DevKitC or WEMOS D1 Mini ESP32).</p>
+
+<div class="card">
+<h3>Install on a new ESP32</h3>
+<p class="ver">Firmware version: <span id="ver">&hellip;</span></p>
+<esp-web-install-button manifest="manifest.json">
+  <span slot="unsupported" class="unsupported">Use Chrome or Edge on a PC or Mac &mdash; this browser cannot flash over USB.</span>
+</esp-web-install-button>
+<ol>
+<li>Plug the ESP32 into the PC with a USB <b>data</b> cable and press <b>CONNECT</b> above.</li>
+<li>If no port shows up: hold <b>BOOT</b>, tap <b>EN</b> (reset), release <b>BOOT</b>, and try again.</li>
+<li>Choose <b>Erase</b> for a new board, then <b>Install</b> (about a minute).</li>
+</ol>
+</div>
+
+<h2>First start: choose your WiFi</h2>
+<ol>
+<li>The new clock opens its own WiFi hotspot <b>LEDClock-Setup</b> (the blue LED blinks fast).</li>
+<li>Connect a phone to it &mdash; the setup page opens by itself (otherwise browse to <code>http://192.168.4.1/</code>).</li>
+<li>Pick your network, type the password, choose a <b>fixed IP</b> (recommended) or <b>Automatic (DHCP)</b>,
+    press <b>SAVE &amp; RESTART</b>.</li>
+<li>Put the phone back on your normal WiFi and open <code>http://&lt;the clock's IP&gt;/</code>.</li>
+</ol>
+<p>More networks: <b>OTHER &rarr; WIFI NETWORKS</b> lists them with <b>DELETE</b> and <b>ADD NETWORK</b>
+(passwords are never shown). The clock tries the saved networks in range, strongest first. If none can be reached
+for several minutes, the hotspot opens by itself for 5 minutes, so you can add one from a phone.</p>
+
+<h2>Updates</h2>
+<p>On the clock's <b>ABOUT</b> page: <b>CHECK FOR UPDATE</b> compares its version with the one on this site;
+<b>INSTALL FROM GITHUB</b> downloads and installs it. Settings, birthdays and reminders are kept, and a failed
+download leaves the old firmware running.</p>
+<p>No internet at the clock? Download <a href="firmware/ledclock.bin">ledclock.bin</a> and use
+<b>UPLOAD &amp; INSTALL</b> on the ABOUT page.</p>
+
+<h2>After installing</h2>
+<ul>
+<li><b>SETTINGS</b>: the clock's name, display brightness (light sensor), day / night colours, how long the
+    display stays on after the radar sees someone, and the buzzer patterns.</li>
+<li><b>BIRTHDAYS / ANNIVERSARYS / REMINDERS</b>: add your dates. Reminders can repeat daily, weekly, monthly or
+    yearly, and can be limited to <b>REMINDER VALID PERIODS</b> (e.g. school terms).</li>
+<li><b>NTFY</b>: free push notifications on your phone &mdash; install the ntfy app and choose your own topic names.</li>
+<li><b>ABOUT &rarr; CLOCK NETWORK</b>: give each clock the IPs of the others, and they share everything.</li>
+<li><b>DISK TOOLS</b>: export everything to CSV now and then, and download the files (FILES page) as a backup.</li>
+</ul>
+
+<h2>Hardware</h2>
+<table>
+<tr><th>Part</th><th>GPIO</th><th>Notes</th></tr>
+<tr><td>LED matrix data (WS2812)</td><td>33</td><td>through a 3.3&nbsp;V&rarr;5&nbsp;V level shifter</td></tr>
+<tr><td>Buzzer (2N2222)</td><td>17</td><td></td></tr>
+<tr><td>Radar presence sensor</td><td>23</td><td>digital output, HIGH = presence</td></tr>
+<tr><td>Push-button (stop message)</td><td>27</td><td>active HIGH</td></tr>
+<tr><td>LDR light sensor</td><td>35</td><td>ADC1</td></tr>
+<tr><td>Status LED</td><td>2</td><td>on-board blue LED; fast blink = WiFi connecting / setup hotspot</td></tr>
+</table>
+<p>PCB (Eagle + gerbers), enclosure files (STL to print, DXF to cut) and the source code are in the
+<a href="https://github.com/777BDVGP/LED_Display_Board">GitHub repository</a>.</p>
+<figure><img src="pictures/Clock_PCB.jpg" alt="Bare PCB V14">
+<figcaption>PCB V14 &mdash; takes an ESP32 DevKitC (left) or a WEMOS D1 Mini ESP32 (right).</figcaption></figure>
+<figure><img src="pictures/Clock_Open_Back.jpg" alt="Clock opened from the back">
+<figcaption>Inside the clock: controller board on the left, mains power supply on the right.</figcaption></figure>
+
+<div class="note">Time zone: the clock currently runs on South African time (UTC+2, no daylight saving);
+a time-zone setting is planned.</div>
+<div class="note">Licence: CC BY-NC 4.0 &mdash; free for personal use, not for sale. The clock is powered from
+230&nbsp;V mains: have the mains wiring done or checked by a qualified person.</div>
+</main>
+<script>
+fetch('version.json').then(r=>r.json()).then(j=>{document.getElementById('ver').textContent=j.version;}).catch(()=>{});
+</script>
+</body>
+</html>
