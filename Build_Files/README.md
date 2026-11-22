@@ -251,9 +251,18 @@ Fit the clear front window with the front corner mounts and the back cover
 with the back corner mounts (M3). The keyholes in the back cover hang the
 clock on two screws in the wall.
 
-### Step 8 — Firmware and WiFi
+### Step 8 — Firmware, WiFi and time zone
 
-Install the firmware from the [install page](https://777bdvgp.github.io/LED_Display_Board/)
-(Chrome or Edge, USB cable to the ESP32 — before closing the back), then
-connect a phone to the **LEDClock-Setup** hotspot and choose your WiFi. See
-the main [README](../README.md).
+1. Install the firmware from the [install page](https://777bdvgp.github.io/LED_Display_Board/)
+   (Chrome or Edge, USB cable to the ESP32 — before closing the back).
+2. Connect a phone to the **LEDClock-Setup** hotspot and choose your WiFi
+   (a fixed IP is recommended).
+3. Open the clock's page and set **SETTINGS → TIME ZONE**. The clock starts
+   on **Greenwich (GMT)**; pick your zone from the list (26 zones — daylight
+   saving switches by itself where the zone has it) and press **UPDATE**. The
+   new time shows straight away, no restart needed.
+4. More than one clock? Give each one the IPs of the others on
+   **ABOUT → CLOCK NETWORK**, and set the time zone on every clock (it is a
+   setting per clock).
+
+See the main [README](../README.md) for everything else.

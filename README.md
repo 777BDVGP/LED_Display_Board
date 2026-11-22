@@ -65,6 +65,12 @@ Everything to build the clock is in [`Build_Files/`](Build_Files) — see its
   either one works),
 - `SparesList.xlsx` — every part with where to buy it.
 
+> **Which ESP32?** Use the original **ESP32-DevKitC-32E** from Espressif (the
+> prototype's came from Espressif's own store on AliExpress). A single clock
+> worked fine on a WEMOS D1 Mini ESP32, but with three clocks syncing in the
+> background the WiFi traffic disturbed the LED display on the WEMOS; the
+> DevKitC-32E runs clean.
+
 The clock is powered from 230 V mains through a small enclosed power supply —
 have the mains wiring done or checked by a qualified person.
 
