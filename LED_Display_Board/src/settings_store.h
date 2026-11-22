@@ -63,8 +63,9 @@
 #define S_BIRTHDAY_TIME_OVR        44   // Enable global time override for B&A events
 #define S_MIDNIGHT_REBOOT_TIME     45   // Daily reboot time (HH:MM)
 #define S_MIDNIGHT_REBOOT_ENABLE   46   // Enable/disable the daily reboot
+#define S_TIME_ZONE                47   // POSIX TZ string (see g_tzOptions, time_sync.c)
 
-#define SETTING_ENTRIES            47
+#define SETTING_ENTRIES            48
 #define SETTING_VALUE_LEN          64
 
 typedef struct {

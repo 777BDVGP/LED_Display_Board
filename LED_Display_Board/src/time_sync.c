@@ -15,21 +15,60 @@
 #include "esp_sntp.h"
 
 #include "globals.h"
+#include "settings_store.h"
 #include "time_sync.h"
 
 static const char *TAG = "time_sync";
+
+// POSIX TZ strings: the offset is west-of-UTC positive (UTC+2 is "-2"); the
+// ",M..." rules switch daylight saving on and off automatically.
+const TzOption g_tzOptions[] = {
+    { "Greenwich (GMT / UTC, no daylight saving)",        "GMT0" },
+    { "UK, Ireland, Portugal (GMT / BST)",                "GMT0BST,M3.5.0/1,M10.5.0" },
+    { "Central Europe (CET / CEST)",                      "CET-1CEST,M3.5.0,M10.5.0/3" },
+    { "Eastern Europe (EET / EEST)",                      "EET-2EEST,M3.5.0/3,M10.5.0/4" },
+    { "South Africa, Zimbabwe, Mozambique (SAST, UTC+2)", "SAST-2" },
+    { "Namibia, Botswana, Zambia (CAT, UTC+2)",           "CAT-2" },
+    { "Kenya, Tanzania, Uganda (EAT, UTC+3)",             "EAT-3" },
+    { "Moscow, Turkey, Saudi Arabia (UTC+3)",             "<+03>-3" },
+    { "Gulf: UAE, Oman (UTC+4)",                          "<+04>-4" },
+    { "Pakistan (UTC+5)",                                 "PKT-5" },
+    { "India, Sri Lanka (IST, UTC+5:30)",                 "IST-5:30" },
+    { "Thailand, Vietnam, Indonesia West (UTC+7)",        "<+07>-7" },
+    { "China, Singapore, Philippines, W. Australia (UTC+8)", "<+08>-8" },
+    { "Japan, Korea (UTC+9)",                             "<+09>-9" },
+    { "Queensland, Australia (AEST, UTC+10)",             "AEST-10" },
+    { "Sydney, Melbourne, Canberra (AEST / AEDT)",        "AEST-10AEDT,M10.1.0,M4.1.0/3" },
+    { "New Zealand (NZST / NZDT)",                        "NZST-12NZDT,M9.5.0,M4.1.0/3" },
+    { "Brazil: Sao Paulo, Rio (UTC-3)",                   "<-03>3" },
+    { "Argentina (UTC-3)",                                "<-03>3" },
+    { "US & Canada Eastern (EST / EDT)",                  "EST5EDT,M3.2.0,M11.1.0" },
+    { "US & Canada Central (CST / CDT)",                  "CST6CDT,M3.2.0,M11.1.0" },
+    { "US & Canada Mountain (MST / MDT)",                 "MST7MDT,M3.2.0,M11.1.0" },
+    { "Arizona (MST, no daylight saving)",                "MST7" },
+    { "US & Canada Pacific (PST / PDT)",                  "PST8PDT,M3.2.0,M11.1.0" },
+    { "Alaska (AKST / AKDT)",                             "AKST9AKDT,M3.2.0,M11.1.0" },
+    { "Hawaii (HST)",                                     "HST10" },
+};
+const int g_tzOptionCount = sizeof(g_tzOptions) / sizeof(g_tzOptions[0]);
+
+void TimeSync_ApplyTimeZone(void)
+{
+    char tz[SETTING_VALUE_LEN];
+    Settings_GetText(S_TIME_ZONE, tz, sizeof(tz));
+    if (tz[0] == '\0') strlcpy(tz, "GMT0", sizeof(tz));
+    setenv("TZ", tz, 1);
+    tzset();
+    ESP_LOGI(TAG, "Time zone: %s", tz);
+}
 
 void TimeSyncTask(void *parameter)
 {
     (void)parameter;
 
-    // South Africa Standard Time, UTC+2, no DST — matches ARD's 02_Time.cpp
-    // (gmtOffset_sec = 2*3600, daylightOffset_sec = 0). POSIX TZ offsets are
-    // inverted (west-of-UTC positive), so UTC+2 is written "-2".
-    setenv("TZ", "SAST-2", 1);
-    tzset();
+    TimeSync_ApplyTimeZone();   // SETTINGS "Time Zone"
 
-    esp_sntp_config_t config = ESP_NETIF_SNTP_DEFAULT_CONFIG("za.pool.ntp.org");
+    esp_sntp_config_t config = ESP_NETIF_SNTP_DEFAULT_CONFIG("pool.ntp.org");
     esp_netif_sntp_init(&config);
 
     ESP_LOGI(TAG, "Waiting for NTP time sync...");

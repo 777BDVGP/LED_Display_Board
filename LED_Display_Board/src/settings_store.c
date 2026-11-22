@@ -28,6 +28,17 @@ SettingEntry g_settings[SETTING_ENTRIES];
 // separators are left with an empty Info label (never rendered, never
 // persisted — see the info[0]=='\0' guards in ReadData/WriteData below).
 // -----------------------------------------------------------------------------
+// Default time zone: Greenwich. A private build can start on South African
+// time instead (PRIVATE_DEFAULT_TZ_SAST in the git-ignored wifi_secrets.h).
+#if __has_include("wifi_secrets.h")
+#include "wifi_secrets.h"
+#endif
+#ifdef PRIVATE_DEFAULT_TZ_SAST
+#define TZ_DEFAULT "SAST-2"
+#else
+#define TZ_DEFAULT "GMT0"
+#endif
+
 void Settings_InitDefaults(void)
 {
     static const struct {
@@ -84,6 +95,7 @@ void Settings_InitDefaults(void)
         { S_BIRTHDAY_TIME_OVR,      "Birthday & Anniversaries Override", "false",         FIELD_BOOL, true  },
         { S_MIDNIGHT_REBOOT_TIME,   "Time",                              "00:05",         FIELD_TIME, true  },
         { S_MIDNIGHT_REBOOT_ENABLE, "Enable Reboot",                     "true",          FIELD_BOOL, true  },
+        { S_TIME_ZONE,              "Time Zone",                         TZ_DEFAULT,      FIELD_SELECT, false },
     };
 
     for (size_t n = 0; n < sizeof(d) / sizeof(d[0]); n++) {

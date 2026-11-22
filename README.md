@@ -11,12 +11,13 @@ on one clock and the others get it within seconds.
 
 **Install page, pictures and updates:** https://777bdvgp.github.io/LED_Display_Board/
 
-> **Status:** first public version. Still to come: a time-zone setting (the
-> clock runs on South African time, UTC+2).
+> **Time zone:** Greenwich (GMT) out of the box — choose yours on
+> SETTINGS → TIME ZONE (daylight saving switches by itself).
 
 ## Features
 
-- **Clock** on a WS2812 (NeoPixel) LED matrix, time from the internet (NTP),
+- **Clock** on a WS2812 (NeoPixel) LED matrix, time from the internet (NTP)
+  in your own time zone (SETTINGS, 26 zones, daylight saving automatic),
   brightness from a light sensor (LDR), display wakes on the radar sensor.
 - **Birthdays & anniversaries** — shown on the day, with age.
 - **Reminders** — once, daily, weekly, first/last weekday of the month or of

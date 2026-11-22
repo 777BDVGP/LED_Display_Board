@@ -14,9 +14,12 @@
 
 #include "cJSON.h"
 
+#include "event_store.h"
+
 #include "field_type.h"
 #include "sensors.h"
 #include "settings_store.h"
+#include "time_sync.h"
 #include "web_core.h"
 #include "web_settings.h"
 #include "ws_hub.h"
@@ -125,6 +128,41 @@ static esp_err_t sendDetectOffRow(httpd_req_t *req, int startIdx, int minIdx, in
     return httpd_resp_send_chunk(req, buf, n);
 }
 
+// -----------------------------------------------------------------------------
+// sendTimeZoneRow — S_TIME_ZONE as a dropdown of g_tzOptions (time_sync.c).
+// A stored value that isn't in the list (e.g. set by hand in Settings.json)
+// is kept and shown as "Custom".
+// -----------------------------------------------------------------------------
+static esp_err_t sendTimeZoneRow(httpd_req_t *req)
+{
+    char cur[SETTING_VALUE_LEN];
+    Settings_GetText(S_TIME_ZONE, cur, sizeof(cur));
+
+    esp_err_t err;
+    char buf[200];
+    int n = snprintf(buf, sizeof(buf),
+        "<div class='gr'><span class='lbl'>Time Zone</span>"
+        "<select id='%d' style='flex:3;min-width:0;max-width:75%%'>", ID_SETTINGS + S_TIME_ZONE);
+    if ((err = httpd_resp_send_chunk(req, buf, n)) != ESP_OK) return err;
+
+    bool found = false;
+    for (int i = 0; i < g_tzOptionCount; i++) {
+        bool sel = !found && strcmp(cur, g_tzOptions[i].posix) == 0;
+        if (sel) found = true;
+        n = snprintf(buf, sizeof(buf), "<option value='%s'%s>%s</option>",
+                     g_tzOptions[i].posix, sel ? " selected" : "", g_tzOptions[i].label);
+        if ((err = httpd_resp_send_chunk(req, buf, n)) != ESP_OK) return err;
+    }
+    if (!found) {
+        n = snprintf(buf, sizeof(buf), "<option value='%s' selected>Custom: %s</option>", cur, cur);
+        if ((err = httpd_resp_send_chunk(req, buf, n)) != ESP_OK) return err;
+    }
+    static const char close[] =
+        "</select></div>"
+        "<div style='font-size:12px;opacity:.75;margin:2px 10px 6px'>Daylight saving switches by itself where the zone has it.</div>";
+    return httpd_resp_send_chunk(req, close, sizeof(close) - 1);
+}
+
 static esp_err_t sendSettingRows(httpd_req_t *req, int fromIdx, int toIdxExclusive)
 {
     for (int i = fromIdx; i < toIdxExclusive; i++) {
@@ -148,6 +186,9 @@ static esp_err_t settings_handler(httpd_req_t *req)
 
     if ((err = sendSection(req, "SYSTEM")) != ESP_OK) return err;
     if ((err = sendSettingRows(req, 0, S_DISPLAY_LINE_1)) != ESP_OK) return err;
+
+    if ((err = sendSection(req, "TIME ZONE")) != ESP_OK) return err;
+    if ((err = sendTimeZoneRow(req)) != ESP_OK) return err;
 
     if ((err = sendSection(req, "BRIGHTNESS")) != ESP_OK) return err;
     if ((err = sendSettingRows(req, S_DISPLAY_LINE_1 + 1, S_DISPLAY_LINE_2)) != ESP_OK) return err;
@@ -242,6 +283,8 @@ static bool isAllDigits(const char *s)
 void UpdateSettingsPageValues(cJSON *root)
 {
     bool birthdayTimeInvalid = false;
+    char tzBefore[SETTING_VALUE_LEN];
+    Settings_GetText(S_TIME_ZONE, tzBefore, sizeof(tzBefore));
 
     cJSON *kv = NULL;
     cJSON_ArrayForEach(kv, root) {
@@ -294,6 +337,16 @@ void UpdateSettingsPageValues(cJSON *root)
         WS_MessUpdate("Settings Updated!", "color: red", true);
     }
     Settings_WriteData();
+
+    // New time zone: apply now (no restart) and rebuild today's events, since
+    // the local date may have changed with it.
+    char tzAfter[SETTING_VALUE_LEN];
+    Settings_GetText(S_TIME_ZONE, tzAfter, sizeof(tzAfter));
+    if (strcmp(tzBefore, tzAfter) != 0) {
+        if (tzAfter[0] == 0) Settings_PutText(S_TIME_ZONE, tzBefore);
+        TimeSync_ApplyTimeZone();
+        Event_RefreshTodayList();
+    }
 
     // Un-dim on save: if the display is currently off (stay-on timer expired),
     // saving Settings — especially a new Day/Night detect-off duration — should

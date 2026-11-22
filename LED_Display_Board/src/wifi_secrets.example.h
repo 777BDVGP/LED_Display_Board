@@ -25,3 +25,7 @@
 // Default NTFY topics (until changed on the NTFY page).
 #define NTFY_DEFAULT_TOPIC1 "MY_NTFY_TOPIC_1"
 #define NTFY_DEFAULT_TOPIC2 "MY_NTFY_TOPIC_2"
+
+// Optional: start on South African time instead of Greenwich (GMT) when no
+// time zone has been chosen yet on the SETTINGS page.
+// #define PRIVATE_DEFAULT_TZ_SAST

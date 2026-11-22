@@ -1,5 +1,5 @@
 {
-  "version": "1.0.2",
+  "version": "1.0.3",
   "bin": "firmware/ledclock.bin",
-  "notes": "Less memory needed for HTTPS: CHECK FOR UPDATE works reliably"
+  "notes": "Time-zone setting (SETTINGS > TIME ZONE), default Greenwich"
 }
