@@ -68,6 +68,14 @@ socket) — the right-hand footprint fits a WEMOS D1 Mini ESP32 instead.
 
 ![Bare PCB V14](Clock%20PCB%20Picture.jpg)
 
+**Board layout** (Eagle, top copper red, bottom copper blue):
+
+![PCB layout V14](PCB.jpg)
+
+**Schematic:**
+
+![Schematic V14](Scematic.jpg)
+
 ### 1.4 Parts list (also in [`SparesList.xlsx`](SparesList.xlsx))
 
 Links are to the sellers used for the prototype (AliExpress unless noted);
