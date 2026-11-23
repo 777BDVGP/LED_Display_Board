@@ -286,6 +286,17 @@ static void executeEventSync(const EventSyncCmd *cmd)
         return;
     }
 
+    if (cmd->type == SYNC_TIMEZONE) {
+        for (int i = 2; i <= g_clockNet.count; i++) {
+            const char *ip = peerIp(i);
+            if (ip[0] == '\0') continue;
+            char url[48];
+            snprintf(url, sizeof(url), "http://%s/settz", ip);
+            if (!httpPostBody(url, cmd->path)) ESP_LOGW(TAG, "Time zone not sent to %s", ip);
+        }
+        return;
+    }
+
     if (cmd->type == SYNC_SAVE) {
         char fullPath[100];
         snprintf(fullPath, sizeof(fullPath), "%s%s", SPIFFS_BASE_PATH, cmd->path);
@@ -377,6 +388,16 @@ void enqueueSyncReplace(const char *kind)
     // silently dropping it like a single-file save would.
     if (xQueueSend(eventSyncQueue, &cmd, pdMS_TO_TICKS(3000)) != pdTRUE) {
         ESP_LOGW(TAG, "Sync queue full — replace %s not sent", kind);
+    }
+}
+
+void enqueueSyncTimeZone(const char *tz)
+{
+    if (eventSyncQueue == NULL || g_clockNet.count < 2) return;
+    EventSyncCmd cmd = { .type = SYNC_TIMEZONE };
+    strlcpy(cmd.path, tz, sizeof(cmd.path));
+    if (xQueueSend(eventSyncQueue, &cmd, pdMS_TO_TICKS(1000)) != pdTRUE) {
+        ESP_LOGW(TAG, "Sync queue full - time zone not sent");
     }
 }
 

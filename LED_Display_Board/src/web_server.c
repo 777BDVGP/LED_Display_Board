@@ -32,7 +32,7 @@ httpd_handle_t WebServer_Start(void)
     // DNS lookups, etc.) — httpd_start() failed outright when this was set to
     // 10, leaving it no headroom to reserve its own listening + client sockets.
     config.max_open_sockets  = 5;
-    config.max_uri_handlers  = 64; // page/AJAX/CSV routes across all modules (55 used)
+    config.max_uri_handlers  = 64; // page/AJAX/CSV routes across all modules (63 used)
     config.lru_purge_enable  = true;
     config.stack_size        = 10240; // page handlers build/scan SPIFFS directories
     config.uri_match_fn      = httpd_uri_match_wildcard;

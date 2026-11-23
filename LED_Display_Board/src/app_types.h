@@ -29,10 +29,12 @@ typedef struct {
 #define SYNC_DELETE  'D'
 #define SYNC_CATCHUP 'C'  // Push all local event files to one peer that just came back online
 #define SYNC_REPLACE 'R'  // Make every peer's set of one file kind match ours (after a CSV import)
+#define SYNC_TIMEZONE 'Z' // Send our SETTINGS Time Zone (POSIX TZ string in path) to every peer
 typedef struct {
-    char type;      // SYNC_SAVE / SYNC_DELETE / SYNC_CATCHUP / SYNC_REPLACE
+    char type;      // SYNC_SAVE / SYNC_DELETE / SYNC_CATCHUP / SYNC_REPLACE / SYNC_TIMEZONE
     char path[34];  // SPIFFS path e.g. "/Birthday_1.json"; peer IP for CATCHUP;
-                    // a SYNC_TAG_* / EVY_TYPE_* kind tag for REPLACE
+                    // a SYNC_TAG_* / EVY_TYPE_* kind tag for REPLACE;
+                    // the POSIX TZ string for TIMEZONE (longest is 28 chars)
 } EventSyncCmd;
 
 #endif // APP_TYPES_H

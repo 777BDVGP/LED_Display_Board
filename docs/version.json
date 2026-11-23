@@ -1,5 +1,5 @@
 {
-  "version": "1.0.4",
+  "version": "1.0.5",
   "bin": "firmware/ledclock.bin",
-  "notes": "Valid Periods list shows how many reminders use each period"
+  "notes": "Changing the Time Zone on one clock now updates the other clocks too"
 }

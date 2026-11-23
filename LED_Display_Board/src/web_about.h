@@ -42,6 +42,10 @@ void enqueueSyncDelete(const char *filePath);
 #define SYNC_TAG_VALID_PERIODS "ValidPeriods"
 void enqueueSyncReplace(const char *kind);
 
+// Time Zone changed on this clock's SETTINGS page: POST it to every peer's
+// /settz (web_settings.c), which applies it without passing it on.
+void enqueueSyncTimeZone(const char *tz);
+
 // FreeRTOS task — drains eventSyncQueue and probes peer clocks every 30s.
 // Call once, after WiFi connects (mirrors ARD's task start in setup()).
 void ClockNetworkTask(void *parameter);

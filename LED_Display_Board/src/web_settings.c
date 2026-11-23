@@ -20,6 +20,7 @@
 #include "sensors.h"
 #include "settings_store.h"
 #include "time_sync.h"
+#include "web_about.h"
 #include "web_core.h"
 #include "web_settings.h"
 #include "ws_hub.h"
@@ -346,6 +347,8 @@ void UpdateSettingsPageValues(cJSON *root)
         if (tzAfter[0] == 0) Settings_PutText(S_TIME_ZONE, tzBefore);
         TimeSync_ApplyTimeZone();
         Event_RefreshTodayList();
+        Settings_GetText(S_TIME_ZONE, tzAfter, sizeof(tzAfter));
+        enqueueSyncTimeZone(tzAfter);   // the other clocks follow
     }
 
     // Un-dim on save: if the display is currently off (stay-on timer expired),
@@ -356,8 +359,52 @@ void UpdateSettingsPageValues(cJSON *root)
     HumanDetect_ActivateStayOn();
 }
 
+// POST /settz  body: POSIX TZ string — sent by a peer clock whose Time Zone
+// was just changed. Only values from g_tzOptions are accepted. Applied here
+// and NOT passed on, so a change can never bounce between clocks.
+static esp_err_t settz_handler(httpd_req_t *req)
+{
+    char tz[SETTING_VALUE_LEN];
+    int len = req->content_len;
+    if (len <= 0 || len >= (int)sizeof(tz)) {
+        httpd_resp_send_err(req, HTTPD_400_BAD_REQUEST, "bad time zone");
+        return ESP_FAIL;
+    }
+    int got = 0;
+    while (got < len) {
+        int r = httpd_req_recv(req, tz + got, len - got);
+        if (r == HTTPD_SOCK_ERR_TIMEOUT) continue;
+        if (r <= 0) return ESP_FAIL;
+        got += r;
+    }
+    tz[got] = '\0';
+
+    bool known = false;
+    for (int i = 0; i < g_tzOptionCount; i++) {
+        if (strcmp(g_tzOptions[i].posix, tz) == 0) { known = true; break; }
+    }
+    if (!known) {
+        httpd_resp_send_err(req, HTTPD_400_BAD_REQUEST, "unknown time zone");
+        return ESP_FAIL;
+    }
+
+    char cur[SETTING_VALUE_LEN];
+    Settings_GetText(S_TIME_ZONE, cur, sizeof(cur));
+    if (strcmp(cur, tz) != 0) {
+        Settings_PutText(S_TIME_ZONE, tz);
+        Settings_WriteData();
+        TimeSync_ApplyTimeZone();
+        Event_RefreshTodayList();
+    }
+    return httpd_resp_sendstr(req, "OK");
+}
+
 void WebSettings_RegisterRoutes(httpd_handle_t server)
 {
+    static const httpd_uri_t settz_uri = {
+        .uri = "/settz", .method = HTTP_POST, .handler = settz_handler,
+    };
+    httpd_register_uri_handler(server, &settz_uri);
     static const httpd_uri_t settings_uri = {
         .uri = "/settings", .method = HTTP_GET, .handler = settings_handler,
     };
