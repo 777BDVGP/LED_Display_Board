@@ -104,6 +104,37 @@ static int clearReminderRefs(const char *ref)
     return changed;
 }
 
+// One SPIFFS pass: for each period in list[0..n), counts the Reminders whose
+// Valid Period points at it. used[] must hold n entries.
+static void countReminderRefs(const VpSummary *list, int n, int *used)
+{
+    for (int i = 0; i < n; i++) used[i] = 0;
+    if (n == 0) return;
+    DIR *dir = opendir(SPIFFS_BASE_PATH);
+    if (!dir) return;
+    EventRecord *tmp = malloc(sizeof(EventRecord));
+    if (!tmp) { closedir(dir); return; }
+
+    struct dirent *ent;
+    while ((ent = readdir(dir)) != NULL) {
+        size_t nlen = strlen(ent->d_name);
+        if (nlen < 6 || strcmp(ent->d_name + nlen - 5, ".json") != 0) continue;
+        if (strncmp(ent->d_name, VP_FILE_PREFIX, strlen(VP_FILE_PREFIX)) == 0) continue;
+
+        char fpath[300];
+        snprintf(fpath, sizeof(fpath), "%s/%s", SPIFFS_BASE_PATH, ent->d_name);
+        Event_InitDefaults(tmp);
+        if (!Event_ReadData(fpath, tmp)) continue;
+        if (strcmp(tmp->fields[S_EVT_TYPE].value, EVY_TYPE_REM) != 0) continue;
+        const char *ref = tmp->fields[S_EVT_VALID_PER].value;
+        for (int i = 0; i < n; i++) {
+            if (strcmp(list[i].ref, ref) == 0) { used[i]++; break; }
+        }
+    }
+    closedir(dir);
+    free(tmp);
+}
+
 // =============================================================================
 // Views
 // =============================================================================
@@ -123,11 +154,17 @@ static esp_err_t sendListView(httpd_req_t *req)
         static const char none[] = "<div class='irow'><dt>No valid periods yet</dt><dd></dd></div>";
         if ((err = httpd_resp_send_chunk(req, none, sizeof(none) - 1)) != ESP_OK) return err;
     }
+    static int s_used[VP_MAX_PERIODS];
+    countReminderRefs(s_list, count, s_used);
     for (int i = 0; i < count; i++) {
-        char row[420];
+        char row[480];
         int n = snprintf(row, sizeof(row),
-            "<a href='?f_Edit=%s'><div class='irow'><dt>%s</dt><dd><span class='tag tok'>%d range%s</span></dd></div></a>",
-            s_list[i].ref, s_list[i].name, s_list[i].count, s_list[i].count == 1 ? "" : "s");
+            "<a href='?f_Edit=%s'><div class='irow'><dt>%s</dt><dd>"
+            "<span class='tag tok' style='margin-right:6px'>%d reminder%s</span>"
+            "<span class='tag tok'>%d range%s</span></dd></div></a>",
+            s_list[i].ref, s_list[i].name,
+            s_used[i], s_used[i] == 1 ? "" : "s",
+            s_list[i].count, s_list[i].count == 1 ? "" : "s");
         if ((err = httpd_resp_send_chunk(req, row, n)) != ESP_OK) return err;
     }
     static const char close[] = "</div>";

@@ -1,5 +1,5 @@
 {
-  "version": "1.0.3",
+  "version": "1.0.4",
   "bin": "firmware/ledclock.bin",
-  "notes": "Time-zone setting (SETTINGS > TIME ZONE), default Greenwich"
+  "notes": "Valid Periods list shows how many reminders use each period"
 }
